@@ -19,14 +19,26 @@ app.get("/buildScript", function(req, res) {
   } else if(existing.indexOf(req.query.key) > -1) {
     return res.status(409).send("A room with that key already exists");
   }
-  var base = fs.readFile("base.js", "utf8", function(err, data) {
+  fs.readFile("base.js", "utf8", function(err, data) {
     if(err) return res.status(500).send("An error occured");
-    res.set("Content-Type", "application/octet-stream");
-    res.set("Content-Disposition", "filename=shoutbox.js");
-    data = data.replace("{{key}}", "\"" + req.query.key + "\"");
-    existing.push(req.query.key);
-    writeExisting();
-    res.send(data);
+    fs.readFile("shoutbox.html", "utf8", function(errBody, shoutboxBody) {
+      if(errBody) return res.status(500).send("An error occured");
+      fs.readFile("shoutbox.css", "utf8", function(errStyle, shoutboxStyle) {
+        if(errStyle) return res.status(500).send("An error occured");
+        res.set("Content-Type", "application/octet-stream");
+        res.set("Content-Disposition", "filename=shoutbox.js");
+        data = data.replace("{{key}}", "\"" + req.query.key + "\"");
+        console.log(typeof shoutboxBody);
+        data = data.replace("{{body}}", "\`" + shoutboxBody + "\`");
+        if(!req.query.customStyle)
+          data = data.replace("{{style}}", "\`" + shoutboxStyle + "\`");
+        else
+          data = data.replace("{{style}}", "");
+        existing.push(req.query.key);
+        writeExisting();
+        res.send(data);
+      });
+    });
   });
 });
 
