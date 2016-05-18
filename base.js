@@ -3,7 +3,7 @@ var body = {{body}}
 var style = {{style}}
 
 socket.on("connect", function() {
-  socket.emit("roomJoin", {{key}});
+  socket.emit("roomJoin", "{{key}}");
 });
 
 socket.on("message", function(message) {

@@ -27,13 +27,14 @@ app.get("/buildScript", function(req, res) {
         if(errStyle) return res.status(500).send("An error occured");
         res.set("Content-Type", "application/octet-stream");
         res.set("Content-Disposition", "filename=shoutbox.js");
-        data = data.replace("{{key}}", "\"" + req.query.key + "\"");
-        console.log(typeof shoutboxBody);
         data = data.replace("{{body}}", "\`" + shoutboxBody + "\`");
-        if(!req.query.customStyle)
+        if(!req.query.customStyle){
           data = data.replace("{{style}}", "\`" + shoutboxStyle + "\`");
-        else
+        }
+        else {
           data = data.replace("{{style}}", "");
+        }
+        data = data.replace(/{{key}}/g, req.query.key);
         existing.push(req.query.key);
         writeExisting();
         res.send(data);
